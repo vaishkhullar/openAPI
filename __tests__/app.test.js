@@ -37,3 +37,26 @@ describe("/api/getTopics", () => {
     });
   });
 });
+
+describe("/api/articles", () => {
+  test.only("happy path test - seeing if the end point returns a status 200", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: articles }) => {
+        expect(articles).toBeSorted({ descending: true });
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+});

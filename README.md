@@ -8,9 +8,9 @@ Your database will be PSQL, and you will interact with it using [node-postgres](
 
 ## Set-up
 
-In oder to set up the environment please create two .env files.
+In oder to set up the environment please create two .env files in your root directory.
 
 - .env.test should set PGDATABASE to be the test database
-  `PGDATABASE = <test_database_name>`
+  `PGDATABASE = nc_news_test`
 - .env.development should set PGDATABASE to be the development database
-  `PGDATABASE = <development_database_name>`
+  `PGDATABASE = nc_news`

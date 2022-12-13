@@ -39,7 +39,7 @@ describe("/api/getTopics", () => {
 });
 
 describe("/api/articles", () => {
-  test.only("happy path test - seeing if the end point returns a status 200", () => {
+  test("happy path test - seeing if the end point returns a status 200", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -57,6 +57,33 @@ describe("/api/articles", () => {
             })
           );
         });
+      });
+  });
+});
+
+describe("api/articles/:article_id", () => {
+  test("happy path of entering a valid article_id and returning a 200 status response", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body: article }) => {
+        expect.objectContaining({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          body: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        });
+      });
+  });
+  test("receiving a request for an article_id that doesn't exist", () => {
+    return request(app)
+      .get("/api/articles/321")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
       });
   });
 });

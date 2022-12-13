@@ -87,3 +87,14 @@ describe("api/articles/:article_id", () => {
       });
   });
 });
+
+describe("/api/articles/:article_id/comments", () => {
+  test.only("if given an article id (e.g. article_id=1) it returns the comments for that article", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: comments }) => {
+        console.log(comments);
+      });
+  });
+});

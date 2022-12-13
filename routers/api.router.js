@@ -1,10 +1,10 @@
 const express = require("express");
 const apiRouter = express.Router();
+const { getTopics } = require("../controllers/topics.controllers");
 const {
-  getTopics,
   getArticles,
   getArticleById,
-} = require("../controllers/topics.controllers");
+} = require("../controllers/article.controllers");
 
 apiRouter.get("/getTopics", getTopics);
 apiRouter.get("/articles", getArticles);

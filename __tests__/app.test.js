@@ -86,4 +86,12 @@ describe("api/articles/:article_id", () => {
         expect(msg).toBe("not found");
       });
   });
+  test("receieving a 400 if the route is not valid", () => {
+    return request(app)
+      .get("/api/article/22")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Route not found");
+      });
+  });
 });

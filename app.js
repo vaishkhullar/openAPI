@@ -12,9 +12,9 @@ app.use("/api", apiRouter);
 
 //error handling
 
-// app.use("/*", (req, res) => {
-//   res.status(404).send({ msg: "Route not found" });
-// });
+app.use("/*", (req, res) => {
+  res.status(400).send({ msg: "Route not found" });
+});
 
 app.use((err, req, res, next) => {
   if (err.msg) {

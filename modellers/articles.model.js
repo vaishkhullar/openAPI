@@ -20,15 +20,3 @@ exports.selectArticleWithId = (article_id) => {
       }
     });
 };
-
-// exports.articleExists = (article_id) => {
-//   db.query(`SELECT * FROM articles where article_id = $1`, [article_id]).then(
-//     ({ rowCount }) => {
-//       if (rowCount === 0) {
-//         return Promise.reject({ status: 404, msg: "not found" });
-//       } else {
-//         return true;
-//       }
-//     }
-//   );
-// };

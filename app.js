@@ -1,5 +1,4 @@
 const express = require("express");
-require("jest-sorted");
 
 const apiRouter = require("./routers/api.router");
 

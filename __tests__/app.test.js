@@ -43,7 +43,7 @@ describe("/api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then(({ body: articles }) => {
+      .then(({ body: { articles } }) => {
         expect(articles).toBeSorted({ descending: true });
         articles.forEach((article) => {
           expect(article).toEqual(
@@ -86,10 +86,10 @@ describe("api/articles/:article_id", () => {
         expect(msg).toBe("not found");
       });
   });
-  test("receieving a 400 if the route is not valid", () => {
+  test("receieving a 404 if the route is not valid", () => {
     return request(app)
       .get("/api/article/22")
-      .expect(400)
+      .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Route not found");
       });
@@ -105,7 +105,7 @@ describe("/api/articles/:article_id/comments", () => {
         console.log(comments);
       });
   });
-  test.only("if given an article id that doesn't exist response with a 404 error", () => {
+  test("if given an article id that doesn't exist response with a 404 error", () => {
     return request(app)
       .get("/api/articles/4000/comments")
       .expect(404)

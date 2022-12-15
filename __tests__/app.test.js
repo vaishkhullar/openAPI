@@ -97,12 +97,20 @@ describe("api/articles/:article_id", () => {
 });
 
 describe("/api/articles/:article_id/comments", () => {
-  test.only("if given an article id (e.g. article_id=1) it returns the comments for that article", () => {
+  test("if given an article id (e.g. article_id=1) it returns the comments for that article", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body: comments }) => {
         console.log(comments);
+      });
+  });
+  test.only("if given an article id that doesn't exist response with a 404 error", () => {
+    return request(app)
+      .get("/api/articles/4000/comments")
+      .expect(404)
+      .then(({ body }) => {
+        console.log(body);
       });
   });
 });

@@ -98,19 +98,38 @@ describe("api/articles/:article_id", () => {
 
 describe("/api/articles/:article_id/comments", () => {
   test("if given an article id (e.g. article_id=1) it returns the comments for that article", () => {
+    const dateRegex = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z)$/;
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
-      .then(({ body: comments }) => {
-        console.log(comments);
+      .then(({ body: { comments } }) => {
+        comments.forEach((comment) => {
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            author: expect.any(String),
+            votes: expect.any(Number),
+            created_at: expect.stringMatching(dateRegex),
+            body: expect.any(String),
+          });
+        });
       });
   });
   test("if given an article id that doesn't exist response with a 404 error", () => {
+    return (
+      request(app)
+        .get("/api/articles/4000/comments")
+        // please can we check this is the right error code? :)
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("not found");
+        })
+    );
+  });
+
+  test("if given an article id which is a string it should respond with a 404", () => {
     return request(app)
-      .get("/api/articles/4000/comments")
-      .expect(404)
-      .then(({ body }) => {
-        console.log(body);
-      });
+      .get("/api/articles/apples/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => expect(msg).toBe("bad request"));
   });
 });

@@ -133,3 +133,52 @@ describe("/api/articles/:article_id/comments", () => {
       .then(({ body: { msg } }) => expect(msg).toBe("bad request"));
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("when given an object with an username and body it checks if the article exists and then adds the comment to the comments table", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "best comment ever.",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body: { comment } }) =>
+        expect.objectContaining({
+          author: expect(newComment.username),
+          body: expect(newComment.body),
+          votes: expect(0),
+          article_id: expect(1),
+        })
+      );
+  });
+
+  test("when given a article_id that doesn't exist return a 'not-found' message", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "best comment ever.",
+    };
+    return request(app)
+      .post("/api/articles/299/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+
+  test("should return a sql error if the username doesn't exist in the users table ", () => {
+    const newComment = {
+      username: "vaish",
+      body: "best comment ever.",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+});

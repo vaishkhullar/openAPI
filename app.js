@@ -3,6 +3,7 @@ const express = require("express");
 const apiRouter = require("./routers/api.router");
 
 const app = express();
+app.use(express.json());
 
 //router
 app.use("/api", apiRouter);
@@ -22,7 +23,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  if (err.code === "22P02") {
+  if ((err.code === "22P02") | (err.code === "23503")) {
     res.status(400).send({ msg: "bad request" });
   }
 });

@@ -66,16 +66,18 @@ describe("api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
-      .then(({ body: article }) => {
-        expect.objectContaining({
-          author: expect.any(String),
-          title: expect.any(String),
-          article_id: expect.any(Number),
-          body: expect.any(String),
-          topic: expect.any(String),
-          created_at: expect.any(String),
-          votes: expect.any(Number),
-        });
+      .then(({ body: { article } }) => {
+        expect(article).toEqual(
+          expect.objectContaining({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+          })
+        );
       });
   });
   test("receiving a request for an article_id that doesn't exist", () => {
@@ -86,15 +88,26 @@ describe("api/articles/:article_id", () => {
         expect(msg).toBe("not found");
       });
   });
-  test("receieving a 404 if the route is not valid", () => {
+
+  test("receiving a request for an article_id of type string (i.e. not valid)", () => {
     return request(app)
-      .get("/api/article/22")
-      .expect(404)
+      .get("/api/articles/apple")
+      .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Route not found");
+        expect(msg).toBe("bad request");
       });
   });
 });
+
+//testing for non-routes
+// test("receieving a 404 if the route is not valid", () => {
+//   return request(app)
+//     .get("/api/article/22")
+//     .expect(404)
+//     .then(({ body: { msg } }) => {
+//       expect(msg).toBe("Route not found");
+//     });
+// });
 
 describe("/api/articles/:article_id/comments", () => {
   test("if given an article id (e.g. article_id=1) it returns the comments for that article", () => {
@@ -104,13 +117,15 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body: { comments } }) => {
         comments.forEach((comment) => {
-          expect.objectContaining({
-            comment_id: expect.any(Number),
-            author: expect.any(String),
-            votes: expect.any(Number),
-            created_at: expect.stringMatching(dateRegex),
-            body: expect.any(String),
-          });
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              author: expect.any(String),
+              votes: expect.any(Number),
+              created_at: expect.stringMatching(dateRegex),
+              body: expect.any(String),
+            })
+          );
         });
       });
   });
@@ -176,9 +191,22 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/2/comments")
       .send(newComment)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+
+  test("when submitting a newComment without a username it should return a status 400", () => {
+    const newComment = {
+      body: "best comment ever.",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("bad request");
+        expect(msg).toBe("missing required field(s)");
       });
   });
 });
@@ -225,6 +253,44 @@ describe("PATCH /api/article/:article_id", () => {
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("not found");
+      });
+  });
+
+  test("when given an article id that's incorrect it returns a 404", () => {
+    const voteObj = { inc_votes: 10 };
+    const updatedArticle = {
+      title: "Moustache",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "Have you seen the size of that thing?",
+      created_at: 1602419040000,
+      votes: 10,
+    };
+    return request(app)
+      .patch("/api/articles/banana")
+      .send(voteObj)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+
+  test("when given an object which doesn'#t have the right key on it", () => {
+    const voteObj = { inc_vot: 10 };
+    const updatedArticle = {
+      title: "Moustache",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "Have you seen the size of that thing?",
+      created_at: 1602419040000,
+      votes: 10,
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(voteObj)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("missing required field(s)");
       });
   });
 });

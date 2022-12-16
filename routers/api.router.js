@@ -11,11 +11,14 @@ const {
   updateVotes,
 } = require("../controllers/article.controllers");
 
+const { getUsers } = require("../controllers/user.controller");
+
 apiRouter.get("/getTopics", getTopics);
 apiRouter.get("/articles", getArticles);
 apiRouter.get("/articles/:article_id", getArticleById);
 apiRouter.get("/articles/:article_id/comments", getCommentsbyArticleId);
 apiRouter.post("/articles/:article_id/comments", addComment);
 apiRouter.patch("/articles/:article_id", updateVotes);
+apiRouter.get("/users", getUsers);
 
 module.exports = apiRouter;

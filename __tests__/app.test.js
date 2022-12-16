@@ -182,3 +182,49 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe.only("PATCH /api/article/:article_id", () => {
+  test("When given an object with the keys inc_votes does it increase/decrease the votes and return a status 200", () => {
+    const voteObj = { inc_votes: 10 };
+    const updatedArticle = {
+      title: "Moustache",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "Have you seen the size of that thing?",
+      created_at: 1602419040000,
+      votes: 10,
+    };
+    return request(app)
+      .patch("/api/articles/12")
+      .send(voteObj)
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect.objectContaining({
+          title: expect("Moustache"),
+          topic: expect("mitch"),
+          author: expect("butter_bridge"),
+          body: expect("Have you seen the size of that thing?"),
+          votes: expect(10),
+        });
+      });
+  });
+
+  test("when given an article that doesn't exist then it returns a 404", () => {
+    const voteObj = { inc_votes: 10 };
+    const updatedArticle = {
+      title: "Moustache",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "Have you seen the size of that thing?",
+      created_at: 1602419040000,
+      votes: 10,
+    };
+    return request(app)
+      .patch("/api/articles/100")
+      .send(voteObj)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("not found");
+      });
+  });
+});

@@ -2,6 +2,7 @@ const {
   selectArticles,
   articleExists,
   selectArticleWithId,
+  updateVotesArticlesTable,
 } = require("../modellers/articles.model");
 
 const { addCommenttoTable } = require("../modellers/comments.model");
@@ -33,6 +34,20 @@ exports.addComment = (req, res, next) => {
   ])
     .then(([check, comment]) => {
       return res.status(201).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.updateVotes = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+
+  Promise.all([
+    selectArticleWithId(article_id),
+    updateVotesArticlesTable(inc_votes, article_id),
+  ])
+    .then(([check, article]) => {
+      return res.status(200).send({ article });
     })
     .catch(next);
 };

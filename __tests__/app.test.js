@@ -255,4 +255,42 @@ describe.only("PATCH /api/article/:article_id", () => {
         expect(msg).toBe("not found");
       });
   });
+
+  test("when given an article id that's incorrect it returns a 404", () => {
+    const voteObj = { inc_votes: 10 };
+    const updatedArticle = {
+      title: "Moustache",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "Have you seen the size of that thing?",
+      created_at: 1602419040000,
+      votes: 10,
+    };
+    return request(app)
+      .patch("/api/articles/banana")
+      .send(voteObj)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
+      });
+  });
+
+  test("when given an object which doesn'#t have the right key on it", () => {
+    const voteObj = { inc_vot: 10 };
+    const updatedArticle = {
+      title: "Moustache",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "Have you seen the size of that thing?",
+      created_at: 1602419040000,
+      votes: 10,
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(voteObj)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("missing required field(s)");
+      });
+  });
 });

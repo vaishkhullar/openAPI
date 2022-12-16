@@ -3,6 +3,7 @@ const express = require("express");
 const apiRouter = require("./routers/api.router");
 
 const app = express();
+app.use(express.json());
 
 //router
 app.use("/api", apiRouter);
@@ -23,7 +24,13 @@ app.use((err, req, res, next) => {
 
 app.use((err, req, res, next) => {
   if (err.code === "22P02") {
+    // type is different
     res.status(400).send({ msg: "bad request" });
+  } else if (err.code === "23503") {
+    // this is missing foreign key
+    res.status(404).send({ msg: "not found" });
+  } else if (err.code === "23502") {
+    res.status(400).send({ msg: "missing required field(s)" });
   }
 });
 

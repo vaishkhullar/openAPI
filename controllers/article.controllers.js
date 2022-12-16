@@ -28,11 +28,9 @@ exports.getArticleById = (req, res, next) => {
 exports.addComment = (req, res, next) => {
   const comment = req.body;
   const { article_id } = req.params;
-  Promise.all([
-    selectArticleWithId(article_id),
-    addCommenttoTable(article_id, comment),
-  ])
-    .then(([check, comment]) => {
+
+  addCommenttoTable(article_id, comment)
+    .then((comment) => {
       return res.status(201).send({ comment });
     })
     .catch(next);

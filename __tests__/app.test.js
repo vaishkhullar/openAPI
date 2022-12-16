@@ -211,7 +211,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("PATCH /api/article/:article_id", () => {
+describe("PATCH /api/article/:article_id", () => {
   test("When given an object with the keys inc_votes does it increase/decrease the votes and return a status 200", () => {
     const voteObj = { inc_votes: 10 };
     const updatedArticle = {
@@ -292,5 +292,29 @@ describe.only("PATCH /api/article/:article_id", () => {
       .then(({ body: { msg } }) => {
         expect(msg).toBe("missing required field(s)");
       });
+  });
+});
+
+describe("09 GET api/users", () => {
+  test("when given the api/users endpoint returns an array of object and status 200", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        users.forEach((user) => {
+          expect.objectContaining({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
+      });
+  });
+
+  test("when given a api/user end point it should return a status 404", () => {
+    return request(app)
+      .get("/api/user")
+      .expect(404)
+      .then(({ body: { msg } }) => expect(msg).toBe("Route not found"));
   });
 });

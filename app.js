@@ -1,9 +1,19 @@
 const express = require("express");
-
+const getEndPoints = require("./controllers/controllers")
 const apiRouter = require("./routers/api.router");
+const fs = require("fs").promises;
 
 const app = express();
 app.use(express.json());
+
+//defining the route
+app.get('/api',(req,res)=>{
+  fs.readFile(`${__dirname}/endpoints.json`)
+  .then((result)=>{
+    const data = JSON.parse(result)
+    res.status(200).send(data)
+  })
+})
 
 //router
 app.use("/api", apiRouter);

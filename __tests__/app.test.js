@@ -318,3 +318,121 @@ describe("09 GET api/users", () => {
       .then(({ body: { msg } }) => expect(msg).toBe("Route not found"));
   });
 });
+
+describe("10 GET api/articles", () => {
+  test("when given the api/users endpoint returns an array of object and status 200 in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({body})=>{
+        expect(body.articles).toBeSortedBy('created_at',{descending:true})
+      });
+      });
+
+  test("200:articles are sorted by a valid column", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({body})=>{
+        expect(body.articles).toBeSortedBy('author',{descending:true})
+      });
+      });
+
+
+      
+      test("200:articles are sorted by a valid column", () => {
+        return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({body})=>{
+          expect(body.articles.length).toBe(11)
+          body.articles.forEach((article)=>{
+            expect(article.topic).toBe('mitch')
+          })
+        });
+      });    
+      
+      // why does this test return an error which is thrown?? It reaches the right error handler in app.js
+
+      test("400: articles are not sorted by a invalid column", () => {
+        return request(app)
+          .get("/api/articles?sort_by=authorxc")
+          .expect(400)
+          .then(({body})=>{
+            expect(body.msg).toBe('bad request')
+          })
+          });
+
+          test("400: articles are not sorted by a invalid column", () => {
+            return request(app)
+              .get("/api/articles?topic=mitche")
+              .expect(400)
+              .then(({body})=>{
+                expect(body.msg).toBe('bad request')
+              })
+              });
+      
+      // why does this test return an error which is thrown?? It reaches the right error handler in app.js
+
+          test("200:articles are sorted by a valid column and only selected topics are returned", () => {
+            return request(app)
+              .get("/api/articles?topic=mitch&sort_by=comment_count")
+              .expect(200)
+              .then(({body})=>{
+                expect(body.articles.length).toBe(11)
+                expect(body.articles).toBeSortedBy('comment_count',{descending:true})
+                body.articles.forEach((article)=>{
+                  expect(article.topic).toBe('mitch')
+                })
+              });
+              });   
+      
+  });
+
+ describe("GET /api/articles/:article_id", ()=>{
+  test("200:Find an object containing comment count for the article_id selected", ()=>{
+    return request(app)
+    .get('/api/articles/1')
+    .expect(200)
+    .then(({article}) =>{
+     expect.objectContaining({comment_count: expect.any(Number)})
+    })
+  })
+
+ })
+
+ describe("DELETE /api/comments/:comment_id", ()=>{
+  test("204: when given a valid comment id it returns a 204 status and no content", ()=>{
+    return request(app)
+    .delete('/api/comments/1')
+    .expect(204)
+    })
+    
+    test("404: when given a invalid comment id it returns a 404 status and a error message", ()=>{
+      return request(app)
+      .delete('/api/comments/100002')
+      .expect(404)
+      .then(({body})=>{
+        expect(body.msg).toBe('bad request')
+      })
+    })
+      
+      test("400: when given a invalid comment id it returns a 400 status and a error message", ()=>{
+        return request(app)
+        .delete('/api/comments/article101')
+        .expect(400)
+        .then(({body})=>{
+          expect(body.msg).toBe('bad request')
+        })  
+      })  
+    })
+      
+
+ describe.only("GET /api", ()=>{
+  test("200 returns a list of all the end points", ()=>{
+    return request(app)
+    .get("/api")
+    .expect(200)
+  })
+ })
+

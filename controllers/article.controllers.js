@@ -8,21 +8,22 @@ const {
 const { addCommenttoTable } = require("../modellers/comments.model");
 
 exports.getArticles = (req, res, next) => {
-  selectArticles()
+  const {sort_by, order,topic} = req.query
+  // add in a promise.All which checks if the topic exists and then also does selectArticles
+  selectArticles(sort_by, topic, order)
     .then((articles) => {
       res.status(200).send({ articles });
     })
-    .catch(next);
+    .catch(next)
 };
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
-
   selectArticleWithId(article_id)
     .then((article) => {
       return res.status(200).send({ article });
     })
-    .catch(next);
+    .catch(next)
 };
 
 exports.addComment = (req, res, next) => {
